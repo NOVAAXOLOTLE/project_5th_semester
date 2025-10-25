@@ -18,4 +18,4 @@ $doc = [
 
 /** @var TYPE_NAME $productsColl */
 $res = $productsColl->insertOne($doc);
-jsonResponse(['inserted_id' => (int)$res->getInsertedId()], 201);
+jsonResponse(['inserted_id' => $res->getInsertedId()], 201);
