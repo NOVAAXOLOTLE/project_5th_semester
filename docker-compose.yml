@@ -1,0 +1,31 @@
+version: '0.5'
+
+services:
+  web:
+    build: .
+    container_name: marketplace_web
+    ports:
+      - "8080:80"                # access on host by http://localhost:8080
+    volumes:
+      - ./src:/var/www/html     # mount the code (src/) in container
+      - vendor_data:/var/www/html/vendor  # <- named volume to preserve vendor
+      - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
+    environment:
+      - MONGO_URI=mongodb://monguito:27017
+      - MONGO_DB=marketplace_db
+    depends_on:
+      - monguito
+    restart: unless-stopped
+
+  monguito:
+    image: mongo:6
+    container_name: marketplace_mongo
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+  vendor_data:
