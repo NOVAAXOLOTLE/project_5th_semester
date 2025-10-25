@@ -12,7 +12,7 @@ if (!isObjectId($id)) {
     jsonResponse(['error' => 'ID inválido'], 400);
 }
 
-/** @var TYPE_NAME $productsColl */
+/** @var $productsColl */
 try {
     $oid = new MongoDB\BSON\ObjectId($id);
     $doc = $productsColl->findOne(['_id' => $oid]);

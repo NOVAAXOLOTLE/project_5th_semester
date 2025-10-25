@@ -37,14 +37,14 @@ if (!isObjectId($id)) jsonResponse(['error' => 'ID inválido'], 400);
 
 $oid = new MongoDB\BSON\ObjectId($id);
 
-/** @var TYPE_NAME $productsColl */
+/** @var $productsColl */
 if ($method === 'DELETE') {
     try {
         $result = $productsColl->deleteOne(['_id' => $oid]);
         if ($result->getDeletedCount() === 0) {
             jsonResponse(['error' => 'No encontrado'], 404);
         }
-        jsonResponse(['status' => 'success', 'deleted_id' => $id]);
+        jsonResponse(['status' => 'success', 'deleted_id' => $id], 204);
     } catch (Exception $e) {
         jsonResponse(['error' => 'Error al eliminar', 'msg' => $e->getMessage()], 500);
     }
