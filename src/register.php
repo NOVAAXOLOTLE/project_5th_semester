@@ -16,5 +16,6 @@ $doc = [
     'creationDate' => new MongoDB\BSON\UTCDateTime()
 ];
 
+/** @var TYPE_NAME $productsColl */
 $res = $productsColl->insertOne($doc);
 jsonResponse(['inserted_id' => (int)$res->getInsertedId()], 201);

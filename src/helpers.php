@@ -1,8 +1,9 @@
 <?php
-function jsonResponse($data, $status = 200)
+function jsonResponse($data, int $status = 200): void
 {
-    header('Content-type: application/json', true, $status);
-    echo json_encode($data);
+    http_response_code($status);
+    header('Content-type: application/json; charset=utf-8');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 

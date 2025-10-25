@@ -6,6 +6,7 @@ RewriteRule ^registrar/?$ register.php [L,QSA]
 RewriteRule ^productos/?$ products.php [L,QSA]
 RewriteRule ^productos/([0-9a-fA-F]{24})/?$ product.php?id=$1 [L,QSA]
 RewriteRule ^eliminar/([0-9a-fA-F]{24})/?$ delete.php?id=$1 [L,QSA]
+RewriteRule ^eliminar/?$ delete.php [L,QSA]
 
 # If neither coincides, redirect to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
