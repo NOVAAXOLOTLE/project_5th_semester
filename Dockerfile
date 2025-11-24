@@ -1,41 +1,39 @@
-FROM php:8.2-apache
+# Dockerfile
+FROM php:8.2-fpm
 
-# Evade interactive
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install necessary dependencies and mongodb extension (PECL)
+# install required packages and build tools
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-       git unzip libssl-dev pkg-config zlib1g-dev libzip-dev \
-  && pecl install mongodb-1.21.2 \
-  && docker-php-ext-enable mongodb \
-  && a2enmod rewrite \
+      git zip unzip libssl-dev pkg-config zlib1g-dev libzip-dev libpng-dev libonig-dev \
+      curl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy composer from official Composer's image (binary)
+# install specific ext-mongodb 1.x (compatible with jenssegers/mongodb)
+RUN pecl install mongodb-1.21.2 \
+  && docker-php-ext-enable mongodb
+
+# common php extensions used by Laravel
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Work directory
 WORKDIR /var/www/html
 
-# Copy composer.json to install dependencies (if exists)
+# copy composer files first (for caching)
 COPY composer.json composer.lock* /var/www/html/
 
-# Install PHP dependencies by Composer (if composer.json requires)
-RUN composer install --no-dev --no-interaction --working-dir=/var/www/html || true
+# install composer deps (if composer.json present in build context)
+RUN composer install --no-dev --no-interaction --prefer-dist || true
 
-# Copy Apache's configuration
-COPY apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+# copy rest of the app
+COPY . /var/www/html
 
-# Copy the app (ONLY if no mounted volumes in docker-compose)
-# COPY src/ /var/www/html/
+# ensure permissions for storage & bootstrap cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true \
+  && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
-# Permissions (make sure that apache can rewrite if any images uploaded)
-RUN chown -R www-data:www-data /var/www/html \
-  && chmod -R 755 /var/www/html
-
-# Expose Apache's port
-EXPOSE 80
-
-# Run Apache in main thread
-CMD ["apache2-foreground"]
+EXPOSE 9000
+CMD ["php-fpm"]
