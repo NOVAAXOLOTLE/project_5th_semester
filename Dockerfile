@@ -23,7 +23,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # copy composer files first (for caching)
-COPY composer.json composer.lock* /var/www/html/
+COPY marketplace/composer.json composer.lock* /var/www/html/
 
 # install composer deps (if composer.json present in build context)
 RUN composer install --no-dev --no-interaction --prefer-dist || true
