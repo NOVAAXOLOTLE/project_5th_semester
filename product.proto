@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package marketplace;
+
+import "google/protobuf/timestamp.proto";
+
+message Product {
+    string id = 1;                     // Using string for Mongo's ObjectId
+    string name = 2;
+    string description = 3;
+    double price = 4;
+    int32 stock = 5;
+    string category = 6;
+    repeated string images = 7;
+    google.protobuf.Timestamp creationDate = 8;
+}
+
+message ProductResponse {
+    bool ok = 1;
+    string message = 2;
+    Product product = 3;
+}
+
+message GetByIdRequest {
+    string id = 1;
+}
+
+message DeleteResponse {
+    bool ok = 1;
+    string message = 2;
+}
+
+message ListRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message ProductList {
+    int32 page = 1;
+    int32 limit = 2;
+    int32 total = 3;
+    repeated Product data = 4;
+}
+
+service ProductService {
+    rpc CreateProduct(Product) returns (ProductResponse);
+    rpc GetProduct(GetByIdRequest) returns (Product);
+    rpc UpdateProduct(Product) returns (ProductResponse);
+    rpc DeleteProduct(GetByIdRequest) returns (DeleteResponse);
+    rpc ListProducts(ListRequest) returns (ProductList);
+}
